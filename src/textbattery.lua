@@ -66,7 +66,9 @@ function textbattery.new(timeout)
 		end
 
 		if level(info.charge) < w.level then
-			w:warn(info)
+			if info.adapter == not true then
+				w:warn(info)
+			end
 			w.level = level(info.charge)
 		end
 		w:set_markup(text)
