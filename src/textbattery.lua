@@ -1,6 +1,7 @@
 local setmetatable = setmetatable
 local os = os
 local textbox = require("wibox.widget.textbox")
+local naughty = require("naughty")
 local button = require("awful.button")
 local util = require("awful.util")
 local capi = { timer = timer }
@@ -27,9 +28,29 @@ function battery:get()
 end
 
 
+function level(charge)
+	if charge == 0 then
+		return 0
+	end
+	if charge <= 5 then
+		return 1
+	end
+	if charge <= 10 then
+		return 2
+	end
+	if charge <= 15 then
+		return 3
+	end
+	return 4
+end
+
+
+
 function textbattery.new(timeout)
 	local timeout = timeout or 10
 	local w = textbox()
+
+	w.level = level(100)
 
 	w["get"] = battery["get"]
 
@@ -44,8 +65,27 @@ function textbattery.new(timeout)
 			text = string.format("Bat <span color='%s'>%d</span>", color, info.charge)
 		end
 
+		if level(info.charge) < w.level then
+			w:warn(info)
+			w.level = level(info.charge)
+		end
 		w:set_markup(text)
 	end
+
+	w["warn"] = function(self, info)
+		naughty.notify({
+			preset = naughty.config.presets.critical,
+			title = "Warning: low battery!",
+			text = string.format("Battery at %d%%", info.charge)
+		})
+	end
+
+	w:buttons(util.table.join(
+		button({ }, 1, function()
+			local info = battery:get()
+			w:warn(info)
+		end)
+	))
 
 	local timer = capi.timer { timeout = timeout }
 	timer:connect_signal("timeout", function() w:update() end)
