@@ -80,10 +80,24 @@ function textbattery.new(timeout)
 		})
 	end
 
+	w["info"] = function()
+		local info = battery:get()
+		local title
+		if info.adapter then
+			title = "Batery charging"
+		else
+			title = "Batery discharging"
+		end
+		naughty.notify({
+			preset = naughty.config.presets.normal,
+			title = title,
+			text = (info.time or "unknown") .. " remaining"
+		})
+	end
+
 	w:buttons(util.table.join(
 		button({ }, 1, function()
-			local info = battery:get()
-			w:warn(info)
+			w:info()
 		end)
 	))
 
