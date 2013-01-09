@@ -20,7 +20,7 @@ function battery:get()
 	fd:close()
 
 	local info = {}
-	info.charge = tonumber(string.match(data, "(%d+)%%") or 0)
+	info.charge = tonumber(string.match(data, "(%d+)%%") or nil)
 	info.time = string.match(data, "(%d%d:%d%d:%d%d)") or nil
 	info.adapter = (string.match(data, "(on[-]line)") == "on-line")
 
@@ -55,21 +55,18 @@ function textbattery.new(timeout)
 	w["get"] = battery["get"]
 
 	w["update"] = function()
-		local info = battery:get()
-		local text
-		if info.adapter == true then
-			local color = "#AFD700"
-			text = string.format("Bat <span color='%s'>%d</span>", color, info.charge)
-		else
-			local color = "#F53145"
-			text = string.format("Bat <span color='%s'>%d</span>", color, info.charge)
-		end
+		local info   = battery:get()
+		local charge = info.charge and info.charge or "--"
+		local color  = info.adapter and "#AFD700" or "#F53145"
+		local text   = string.format("Bat <span color='%s'>%s</span>", color, charge)
 
-		if level(info.charge) < w.level then
-			if info.adapter == not true then
-				w:warn(info)
+		if info.charge then
+			if level(info.charge) < w.level then
+				if info.adapter == not true then
+					w:warn(info)
+				end
+				w.level = level(info.charge)
 			end
-			w.level = level(info.charge)
 		end
 		w:set_markup(text)
 	end
