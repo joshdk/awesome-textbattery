@@ -45,16 +45,17 @@ function level(charge)
 end
 
 
-
 function textbattery.new(timeout)
 	local timeout = timeout or 10
 	local w = textbox()
 
 	w.level = level(100)
 
-	w["get"] = battery["get"]
+	function w:get(self)
+		return battery:get()
+	end
 
-	w["update"] = function()
+	function w:update(self)
 		local info   = battery:get()
 		local charge = info.charge and info.charge or "--"
 		local color  = info.adapter and "#AFD700" or "#F53145"
@@ -71,7 +72,7 @@ function textbattery.new(timeout)
 		w:set_markup(text)
 	end
 
-	w["warn"] = function(self, info)
+	function w:warn(self, info)
 		naughty.notify({
 			preset = naughty.config.presets.critical,
 			title = "Warning: low battery!",
@@ -79,7 +80,7 @@ function textbattery.new(timeout)
 		})
 	end
 
-	w["info"] = function()
+	function w:info(self)
 		local info = battery:get()
 		local title
 		if info.adapter then
