@@ -51,10 +51,7 @@ function textbattery.new(timeout)
 
 	w.level = level(100)
 
-	function w:get(self)
-		return battery:get()
-	end
-
+--{{{ Updates the widget
 	function w:update(self)
 		local info   = battery:get()
 		local charge = info.charge and info.charge or "--"
@@ -71,7 +68,9 @@ function textbattery.new(timeout)
 		end
 		w:set_markup(text)
 	end
+--}}}
 
+--{{{ Displays low-battery warnings
 	function w:warn(self, info)
 		naughty.notify({
 			preset = naughty.config.presets.critical,
@@ -79,7 +78,9 @@ function textbattery.new(timeout)
 			text = string.format("Battery at %d%%", info.charge)
 		})
 	end
+--}}}
 
+--{{{ Displays info about battery charging state
 	function w:info(self)
 		local info = battery:get()
 		local title
@@ -94,12 +95,15 @@ function textbattery.new(timeout)
 			text = (info.time or "unknown") .. " remaining"
 		})
 	end
+--}}}
 
+--{{{ Key bindings
 	w:buttons(util.table.join(
 		button({ }, 1, function()
 			w:info()
 		end)
 	))
+--}}}
 
 	local timer = capi.timer { timeout = timeout }
 	timer:connect_signal("timeout", function() w:update() end)
