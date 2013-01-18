@@ -32,7 +32,7 @@ end
 
 --{{{ Report what the level of battery depletion is
 function level(charge)
-	local levels = {0, 5, 10, 15}
+	local levels = {5, 10, 15}
 	for i = 1,#levels do
 		if charge <= levels[i] then
 			return i-1
@@ -51,26 +51,29 @@ function textbattery.new(timeout)
 	w.level = level(100)
 
 --{{{ Updates the widget
-	function w:update(self)
+	function w:update()
 		local info   = battery:get()
 		local charge = info.charge and info.charge or "--"
 		local color  = info.adapter and "#AFD700" or "#F53145"
 		local text   = string.format("Bat <span color='%s'>%s</span>", color, charge)
 
-		if info.charge then
-			if level(info.charge) < w.level then
-				if info.adapter == not true then
+		if info.charge ~= nil then
+			if info.adapter == false then
+				if level(info.charge) < w.level then
 					w:warn(info)
 				end
 				w.level = level(info.charge)
+			else
+				w.level = level(100)
 			end
 		end
+
 		w:set_markup(text)
 	end
 --}}}
 
 --{{{ Displays low-battery warnings
-	function w:warn(self, info)
+	function w:warn(info)
 		naughty.notify({
 			preset = naughty.config.presets.critical,
 			title = "Warning: low battery!",
@@ -80,7 +83,7 @@ function textbattery.new(timeout)
 --}}}
 
 --{{{ Displays info about battery charging state
-	function w:info(self)
+	function w:info()
 		local info = battery:get()
 		local title
 		if info.adapter then
