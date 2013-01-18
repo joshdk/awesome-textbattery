@@ -12,6 +12,7 @@ local textbattery = { mt = {} }
 local battery = {}
 
 
+--{{{ Extract battery info from acpi
 function battery:get()
 	local cmd = "acpi -ba"
 
@@ -26,25 +27,23 @@ function battery:get()
 
 	return info
 end
+--}}}
 
 
+--{{{ Report what the level of battery depletion is
 function level(charge)
-	if charge == 0 then
-		return 0
+	local levels = {0, 5, 10, 15}
+	for i = 1,#levels do
+		if charge <= levels[i] then
+			return i-1
+		end
 	end
-	if charge <= 5 then
-		return 1
-	end
-	if charge <= 10 then
-		return 2
-	end
-	if charge <= 15 then
-		return 3
-	end
-	return 4
+	return #levels
 end
+--}}}
 
 
+--{{{ Textbattery constructor
 function textbattery.new(timeout)
 	local timeout = timeout or 10
 	local w = textbox()
@@ -111,6 +110,7 @@ function textbattery.new(timeout)
 	timer:emit_signal("timeout")
 	return w
 end
+--}}}
 
 
 function textbattery.mt:__call(...)
