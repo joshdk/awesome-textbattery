@@ -22,17 +22,17 @@ Using
 Import the module
 
 ```lua
--- add this line at the top of your rc.lua
-textbattery = require("textbattery");
+-- Add this line at the top of your rc.lua
+local textbattery = require("textbattery");
 ```
 
 Create a widget instance (at the start of the Wibox section in rc.lua):
 
 ```lua
--- Create a textclock widget
-mytextclock = awful.widget.textclock()
--- Create a textbattery widget
-mytextbattery = awful.widget.textbattery()
+-- Create the textclock widget
+local mytextclock = awful.widget.textclock()
+-- Create our textbattery widget
+local mytextbattery = awful.widget.textbattery()
 ```
 
 Add our instance (near the end of the Wibox section in rc.lua):
