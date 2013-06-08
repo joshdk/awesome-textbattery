@@ -9,24 +9,22 @@ Installing
 
     # make install
 
-```lua
--- add this line inside of /usr/share/awesome/lib/awful/widget/init.lua
-textbattery = require("awful.widget.textbattery");
-```
-
 
 Uninstalling
 ------------
 
     # make uninstall
 
-```lua
--- remove this line from /usr/share/awesome/lib/awful/widget/init.lua
-textbattery = require("awful.widget.textbattery");
-```
 
 Using
 -----
+
+Import the module
+
+```lua
+-- add this line at the top of your rc.lua
+textbattery = require("textbattery");
+```
 
 Create a widget instance (at the start of the Wibox section in rc.lua):
 
